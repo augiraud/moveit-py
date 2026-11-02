@@ -1,12 +1,21 @@
 [project]
-name = "python-template"
+name = "moveit-py"
 version = "0.1.0"
-description = "Python project template (the FizzBuzz code is a placeholder: replace it with yours)"
+description = "Upload/download directories to/from a MOVEit Transfer server, send and receive packages."
 requires-python = ">=3.14"
-dependencies = []
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "augiraud" }]
+dependencies = [
+    "requests>=2.34.2",
+    "requests-toolbelt>=1.0.0",
+]
+
+[project.urls]
+Repository = "https://github.com/augiraud/moveit-py"
 
 [project.scripts]
-python-template = "python_template.__main__:main"
+moveit = "moveit_py.cli:main"
 
 [dependency-groups]
 dev = [
@@ -14,6 +23,7 @@ dev = [
     "pytest-cov>=7.1.0",
     "ruff>=0.17.3",
     "ty>=0.0.95",
+    "types-requests>=2.33.0.20261030",
 ]
 
 [build-system]
@@ -31,6 +41,7 @@ extend-select = [
     "ANN", # type annotations
     "B",   # likely bugs
     "C4",  # comprehensions
+    "C90", # complexity (mccabe)
     "I",   # import sorting
     "PL",  # pylint
     "RUF", # ruff-specific
@@ -38,15 +49,22 @@ extend-select = [
     "SIM", # simplifications
     "UP",  # modern Python syntax
 ]
+ignore = ["PLR0911"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 10
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101"]
+"tests/**" = ["S101", "PLR2004", "S105", "S106"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
 [tool.coverage.run]
-source_pkgs = ["python_template"]
+source_pkgs = ["moveit_py"]
 branch = true
 
 [tool.coverage.report]

@@ -17,8 +17,6 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-      ### uncomment to enable publishing the docker image to GitHub Container Registry
-      #packages: write
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
@@ -50,17 +48,3 @@ jobs:
       - name: Sonar (skipped)
         if: env.SONAR_TOKEN == ''
         run: echo "::notice::Sonar skipped. To enable it, add a SONAR_TOKEN secret (see README)."
-
-      ### Publish image to GitHub Container Registry - uncomment to enable
-      # - name: Publish image
-      #   if: github.event_name == 'push'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     image="ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
-      #     if [ "$GITHUB_REF_TYPE" = tag ]; then tag=$GITHUB_REF_NAME; else tag=latest; fi
-      #     echo "$GITHUB_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
-      #     for t in "$tag" "$GITHUB_SHA"; do
-      #       docker tag python-template "$image:$t"
-      #       docker push "$image:$t"
-      #     done

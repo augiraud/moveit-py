@@ -28,8 +28,12 @@ fi
 step "Format (ruff)" uv run ruff format --check
 step "Lint (ruff)" uv run ruff check
 step "Types (ty)" uv run ty check
+if command -v shellcheck > /dev/null 2>&1; then
+  step "Shell (shellcheck)" shellcheck -x -P SCRIPTDIR scripts/*.sh
+else
+  echo "==> Shell (shellcheck): skipped, shellcheck is not installed"
+fi
 step "Tests (pytest)" uv run pytest --cov --cov-report=term-missing --cov-report=xml
-step "Docker image" ./scripts/docker_build.sh
 
 if [ -n "$failed" ]; then
   echo "Failed:$failed"
