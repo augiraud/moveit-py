@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+.venv/
+.coverage
+coverage.xml
+dist/
+
+# Editors and tools
+.idea/
+.vscode/
+.zed/
+.fleet/
+.vs/
+.serena/
+*.sublime-workspace
+*.swp
+*~
+.#*
+\#*\#
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

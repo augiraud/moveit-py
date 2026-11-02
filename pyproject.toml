@@ -1,0 +1,53 @@
+[project]
+name = "python-template"
+version = "0.1.0"
+description = "Python project template (the FizzBuzz code is a placeholder: replace it with yours)"
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+python-template = "python_template.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.3",
+    "ty>=0.0.95",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv]
+required-version = ">=0.9"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = [
+    "ANN", # type annotations
+    "B",   # likely bugs
+    "C4",  # comprehensions
+    "I",   # import sorting
+    "PL",  # pylint
+    "RUF", # ruff-specific
+    "S",   # security (bandit)
+    "SIM", # simplifications
+    "UP",  # modern Python syntax
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source_pkgs = ["python_template"]
+branch = true
+
+[tool.coverage.report]
+exclude_also = ['if __name__ == "__main__":']

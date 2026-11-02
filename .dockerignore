@@ -1,0 +1,6 @@
+# Only send what the image needs to Docker.
+*
+!pyproject.toml
+!uv.lock
+!src
+**/__pycache__

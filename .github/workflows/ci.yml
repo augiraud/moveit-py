@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      ### uncomment to enable publishing the docker image to GitHub Container Registry
+      #packages: write
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv/python
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock', '.python-version') }}
+          restore-keys: uv-${{ runner.os }}-
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - run: ./scripts/setup.sh
+
+      - run: ./scripts/local_ci.sh
+
+      - name: Sonar
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@4d1dc0c91ee400dcf8a6dddf2f705ac36542e304 # v8.4.0
+
+      - name: Sonar (skipped)
+        if: env.SONAR_TOKEN == ''
+        run: echo "::notice::Sonar skipped. To enable it, add a SONAR_TOKEN secret (see README)."
+
+      ### Publish image to GitHub Container Registry - uncomment to enable
+      # - name: Publish image
+      #   if: github.event_name == 'push'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     image="ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+      #     if [ "$GITHUB_REF_TYPE" = tag ]; then tag=$GITHUB_REF_NAME; else tag=latest; fi
+      #     echo "$GITHUB_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      #     for t in "$tag" "$GITHUB_SHA"; do
+      #       docker tag python-template "$image:$t"
+      #       docker push "$image:$t"
+      #     done
