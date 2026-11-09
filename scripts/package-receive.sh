@@ -18,7 +18,7 @@ parse_prelude "$@"
 # shellcheck disable=SC2086
 set -- ${ARGS[@]+"${ARGS[@]}"}
 
-[ $# -eq 2 ] || bad_usage
+[[ $# -eq 2 ]] || bad_usage
 case "$1" in
   "" | *[!0-9]*) fail "PACKAGE_ID must be a number, e.g. 379341516 (see package-list.sh)" ;;
 esac

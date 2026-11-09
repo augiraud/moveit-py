@@ -17,7 +17,7 @@ parse_prelude "$@"
 # shellcheck disable=SC2086
 set -- ${ARGS[@]+"${ARGS[@]}"}
 
-{ [ $# -eq 3 ] || [ $# -eq 4 ]; } || bad_usage
+[[ $# -eq 3 || $# -eq 4 ]] || bad_usage
 subject=$1
 emails=$2
 path_arg=$3
@@ -29,7 +29,7 @@ case "$emails" in
   *@*) ;;
   *) fail "EMAILS must be comma-separated emails, e.g. alice@example.com,bob@example.com" ;;
 esac
-[ -e "$path_arg" ] || fail "'$path_arg' does not exist"
+[[ -e "$path_arg" ]] || fail "'$path_arg' does not exist"
 case "$first" in
   [!1-9]* | *[!0-9]*) fail "FIRST_PACKAGE must be a package number, e.g. 3" ;;
 esac
@@ -39,7 +39,7 @@ if ! command -v zip > /dev/null 2>&1; then
 fi
 check_setup
 
-if [ -d "$path_arg" ]; then
+if [[ -d "$path_arg" ]]; then
   path=$(cd "$path_arg" && pwd)
 else
   path=$(cd "$(dirname "$path_arg")" && pwd)/$(basename "$path_arg")
@@ -48,9 +48,9 @@ name=$(basename "$path")
 parent=$(dirname "$path")
 parts_dir=$path.parts
 
-if [ -e "$parts_dir" ]; then
+if [[ -e "$parts_dir" ]]; then
   echo "Using the parts already in $parts_dir"
-elif [ "$first" != "1" ]; then
+elif [[ "$first" != "1" ]]; then
   fail "no parts to resume from in $parts_dir"
 else
   echo "Zipping $name into $part_size_mb MB parts, in $parts_dir..."
@@ -65,7 +65,7 @@ fi
 # Sort the numbered parts by their suffix, then put .zip last.
 listing=$(
   for f in "$parts_dir/$name".z*; do
-    [ -f "$f" ] || continue
+    [[ -f "$f" ]] || continue
     suffix=${f##*.}
     digits=${suffix#z}
     case "$digits" in
@@ -77,40 +77,40 @@ listing=$(
 )
 parts=()
 while IFS= read -r line; do
-  [ -n "$line" ] && parts+=("$line")
+  [[ -n "$line" ]] && parts+=("$line")
 done <<LIST
 $listing
 LIST
 count_parts=${#parts[@]}
-[ "$count_parts" -gt 0 ] || fail "no parts found in $parts_dir"
+[[ "$count_parts" -gt 0 ]] || fail "no parts found in $parts_dir"
 
 total=$(((count_parts + per_package - 1) / per_package))
-[ "$first" -le "$total" ] || fail "there are only $total packages"
+[[ "$first" -le "$total" ]] || fail "there are only $total packages"
 
 p=$first
-while [ "$p" -le "$total" ]; do
+while [[ "$p" -le "$total" ]]; do
   start=$(((p - 1) * per_package))
   chunk=("${parts[@]:$start:$per_package}")
   echo "== Package $p/$total: ${#chunk[@]} files"
   note="Package $p/$total of $name, split into $count_parts zip parts. Download the files of all $total packages into one directory, then extract $name.zip with 7-Zip (7z x $name.zip)."
   rc=0
   run_tool send --to "$emails" --note "$note" -- "$subject ($p/$total)" "${chunk[@]}" || rc=$?
-  if [ "$rc" -ne 0 ]; then
+  if [[ "$rc" -ne 0 ]]; then
     {
       echo
-      if [ "$p" -eq $((first + 1)) ]; then
+      if [[ "$p" -eq $((first + 1)) ]]; then
         echo "Package $first/$total was sent."
-      elif [ "$p" -gt "$first" ]; then
+      elif [[ "$p" -gt "$first" ]]; then
         echo "Packages $first-$((p - 1)) of $total were sent."
       fi
       echo "Package $p/$total failed, see above. To send it and the next ones, run:"
       printf '  %q' "$0"
-      if [ -n "$URL_ARG" ]; then
+      if [[ -n "$URL_ARG" ]]; then
         printf ' %q %q' --url "$URL_ARG"
       fi
       printf ' %q %q %q %q\n' "$subject" "$emails" "$path" "$p"
     } >&2
-    if [ "$rc" -eq 3 ]; then
+    if [[ "$rc" -eq 3 ]]; then
       exit 3
     fi
     exit 1

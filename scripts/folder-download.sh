@@ -19,13 +19,13 @@ parse_prelude "$@"
 # shellcheck disable=SC2086
 set -- ${ARGS[@]+"${ARGS[@]}"}
 
-{ [ $# -eq 2 ] || [ $# -eq 3 ]; } || bad_usage
+[[ $# -eq 2 || $# -eq 3 ]] || bad_usage
 case "$1" in
   /*) ;;
   *) fail "MOVEIT_FOLDER must start with /, e.g. /Data/project/results" ;;
 esac
 check_setup
-if [ -n "${3:-}" ]; then
+if [[ -n "${3:-}" ]]; then
   run_tool download "$1" "$2" --filter "$3"
 else
   run_tool download "$1" "$2"
