@@ -34,8 +34,12 @@ jobs:
 
       - name: Install uv
         run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 -LsSf \
+            https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-unknown-linux-gnu.tar.gz \
+            -o "$RUNNER_TEMP/uv.tar.gz"
+          echo "c5221ff41b7892bfc223543883600125f6a47fe845093e0f5bdff4f359196d83  $RUNNER_TEMP/uv.tar.gz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/uv.tar.gz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/uv-x86_64-unknown-linux-gnu" >> "$GITHUB_PATH"
 
       - run: ./scripts/setup.sh
 

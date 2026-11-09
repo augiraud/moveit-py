@@ -16,6 +16,6 @@ parse_prelude "$@"
 # shellcheck disable=SC2086
 set -- ${ARGS[@]+"${ARGS[@]}"}
 
-[ $# -eq 0 ] || bad_usage
+[[ $# -eq 0 ]] || bad_usage
 check_setup
 run_tool login

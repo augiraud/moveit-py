@@ -18,8 +18,8 @@ parse_prelude "$@"
 # shellcheck disable=SC2086
 set -- ${ARGS[@]+"${ARGS[@]}"}
 
-[ $# -eq 2 ] || bad_usage
-[ -d "$1" ] || fail "LOCAL_DIR '$1' is not a directory"
+[[ $# -eq 2 ]] || bad_usage
+[[ -d "$1" ]] || fail "LOCAL_DIR '$1' is not a directory"
 case "$2" in
   /*) ;;
   *) fail "MOVEIT_FOLDER must start with /, e.g. /Home/abcdef123456/results" ;;

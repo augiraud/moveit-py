@@ -16,14 +16,14 @@ check_setup() {
     echo "Error: uv is not installed, see README.md" >&2
     exit 1
   fi
-  if [ -z "${MOVEIT_URL:-}" ] &&
+  if [[ -z "${MOVEIT_URL:-}" ]] &&
     ! grep -Eq '^[[:space:]]*(export[[:space:]]+)?MOVEIT_URL=.' "$MOVEIT_ENV_FILE" 2> /dev/null; then
     fail "no MOVEit server: create moveit.env from moveit.env.example, or use --url https://moveit.example.com"
   fi
 }
 
 run_tool() {
-  uv run --quiet --project "$PROJECT_DIR" moveit "$@"
+  uv run --no-build --quiet --project "$PROJECT_DIR" moveit "$@"
 }
 
 # Parse --help and --url. The calling script defines usage().
@@ -37,8 +37,8 @@ parse_prelude() {
       exit 0
       ;;
   esac
-  if [ "${1:-}" = "--url" ]; then
-    if [ $# -lt 2 ] || [ -z "$2" ]; then
+  if [[ "${1:-}" = "--url" ]]; then
+    if [[ $# -lt 2 || -z "$2" ]]; then
       fail "--url needs a URL"
     fi
     URL_ARG=$2

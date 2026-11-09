@@ -115,4 +115,4 @@ class Runner:
         return [r.split("\0")[:-1] for r in records]
 
 
-PROJECT_ARGS = ["run", "--quiet", "--project", str(SCRIPTS.parent), "moveit"]
+PROJECT_ARGS = ["run", "--no-build", "--quiet", "--project", str(SCRIPTS.parent), "moveit"]

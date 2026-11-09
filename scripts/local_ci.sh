@@ -21,21 +21,21 @@ step() {
 }
 
 if $fix; then
-  uv run ruff format
-  uv run ruff check --fix || true
+  uv run --no-build ruff format
+  uv run --no-build ruff check --fix || true
 fi
 
-step "Format (ruff)" uv run ruff format --check
-step "Lint (ruff)" uv run ruff check
-step "Types (ty)" uv run ty check
+step "Format (ruff)" uv run --no-build ruff format --check
+step "Lint (ruff)" uv run --no-build ruff check
+step "Types (ty)" uv run --no-build ty check
 if command -v shellcheck > /dev/null 2>&1; then
   step "Shell (shellcheck)" shellcheck -x -P SCRIPTDIR scripts/*.sh
 else
   echo "==> Shell (shellcheck): skipped, shellcheck is not installed"
 fi
-step "Tests (pytest)" uv run pytest --cov --cov-report=term-missing --cov-report=xml
+step "Tests (pytest)" uv run --no-build pytest --cov --cov-report=term-missing --cov-report=xml
 
-if [ -n "$failed" ]; then
+if [[ -n "$failed" ]]; then
   echo "Failed:$failed"
   exit 1
 fi
